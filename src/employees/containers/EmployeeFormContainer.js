@@ -1,10 +1,14 @@
 import { connect } from 'react-redux'
 import EmployeeForm from "../components/EmployeeForm";
-import { addEmployee } from "../../store/actions"
+import { addEmployee, executeRedirect } from "../../store/actions"
+import EmployeePage from "../components/EmployeePage";
 
 const mapStateToProps = (state) => {
     return {
-        employeeFields: Object.values(state.employeeFields)
+        employeeFields: Object.values(state.employeeFields),
+        departments: state.departments,
+        employeePositions: state.employeePositions,
+        redirectPath: state.redirectPath
     }
 };
 
@@ -12,7 +16,8 @@ const mapDispatchToProps = (dispatch) => {
     return {
         addEmployee: (employee) => {
             dispatch(addEmployee(employee))
-        }
+        },
+        executeRedirect: () => { dispatch(executeRedirect( EmployeePage.baseUrl )) }
     }
 };
 

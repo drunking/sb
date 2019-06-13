@@ -8,24 +8,23 @@ import EmployeeFieldConfigContainer from "../containers/EmployeeFieldConfigConta
 
 
 class EmployeePage extends Component {
-    get baseUrl() { return "/employee" };
-    get routing(){ return {
+    static get baseUrl(){ return "/employee" };
+    static get routing(){ return {
         routes: [
             {
                 name: "Список сотрудников",
-                path: `${ this.baseUrl }`,
+                path: `${ EmployeePage.baseUrl }`,
                 pathExact: true,
                 component: EmployeeListContainer
             },
             {
                 name: "Добавить запись",
-                path: `${ this.baseUrl }/add`,
-                component: EmployeeFormContainer,
-                props: { employee:{}, formEditMode: true }
+                path: `${ EmployeePage.baseUrl }/add`,
+                component: EmployeeFormContainer
             },
             {
                 name: "Настройки",
-                path: `${ this.baseUrl }/configuration`,
+                path: `${ EmployeePage.baseUrl }/configuration`,
                 component: EmployeeFieldConfigContainer
             }
         ]
@@ -35,22 +34,20 @@ class EmployeePage extends Component {
         return (
             <Router>
                 <Container>
-                    <Nav activeKey={ this.baseUrl }>
-                        {this.routing.routes.map( (route, i) =>
+                    <Nav activeKey={ EmployeePage.baseUrl }>
+                        {EmployeePage.routing.routes.map( (route, i) =>
                             <Nav.Item key={ i }>
                                 <Link className="nav-link" to={ route.path }>{ route.name }</Link>
                             </Nav.Item>
                         )}
                     </Nav>
                     <Container>
-                        {this.routing.routes.map((route, i) =>
+                        {EmployeePage.routing.routes.map((route, i) =>
                             <Route
                                 exact={ route.pathExact }
                                 key={ i }
                                 path={ route.path }
-                                render={ () => (
-                                    <route.component { ...route.props } />
-                                )}
+                                component={ route.component }
                             />
                         )}
                     </Container>

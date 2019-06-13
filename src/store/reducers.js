@@ -2,21 +2,22 @@ import {
     FIND_EMPLOYEE,
     ADD_EMPLOYEE,
     SET_EMPLOYEE_LIST_SELECTED_EMPLOYEE_ID,
-    TOGGLE_EMPLOYEE_FIELD_PROPERTY
+    TOGGLE_EMPLOYEE_FIELD_PROPERTY, EXECUTE_REDIRECT
 } from "./actions"
+import {Redirect} from "react-router";
+import React from "react";
 
 const initialState = {
     employeeFields: {
-        sureName:   { id: "sureName",   name: "Фамилия",         readOnly: false, visible: true },
-        firstName:  { id: "firstName",  name: "Имя",             readOnly: false, visible: true },
-        lastName:   { id: "lastName",   name: "Отчество",        readOnly: false, visible: true },
-        birthDate:  { id: "birthDate",  name: "Дата рождения",   readOnly: false, visible: true },
-        code:       { id: "code",       name: "Табельный номер", readOnly: false, visible: true },
-        position:   { id: "position",   name: "Должность",       readOnly: false, visible: true },
-        department: { id: "department", name: "Подразделение",   readOnly: false, visible: true }
+        sureName:   { id: "sureName",   name: "Фамилия",         visible: true },
+        firstName:  { id: "firstName",  name: "Имя",             visible: true },
+        lastName:   { id: "lastName",   name: "Отчество",        visible: true },
+        birthDate:  { id: "birthDate",  name: "Дата рождения",   visible: true },
+        code:       { id: "code",       name: "Табельный номер", visible: true },
+        position:   { id: "position",   name: "Должность",       visible: true, dictionary: "employeePositions" },
+        department: { id: "department", name: "Подразделение",   visible: true, dictionary: "departments" }
     },
     employeeFieldProperties: {
-        //readOnly: { id: "readOnly", name: "Только чтение" },
         visible:  { id: "visible",  name: "Просмотр" }
     },
     employees: {
@@ -61,9 +62,15 @@ const initialState = {
             department: "DP-QC"
         }
     },
+    employeePositions: [
+        "Product manager", "Developer", "Quality assurance", "Quality control"
+    ],
+    departments: [
+        "DP-PM", "DP-DEV", "DP-QA", "DP-QC"
+    ],
     employeeListFieldsId: ["sureName", "position"],
-    employeeListSelectedEmployeeId: 1
-
+    employeeListSelectedEmployeeId: 1,
+    redirectPath: null
 };
 
 export default function employeeApp(state = initialState, action) {
@@ -86,6 +93,8 @@ export default function employeeApp(state = initialState, action) {
             field[action.propertyId] = !field[action.propertyId];
 
             return Object.assign({}, state, { employeeFields: Object.assign({}, state.employeeFields, { [field.id]: field }) })
+        case EXECUTE_REDIRECT:
+            return Object.assign({}, state, { redirectPath: <Redirect to={ action.path }/> });
         default:
             return state;
 

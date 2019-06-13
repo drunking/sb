@@ -3,15 +3,26 @@ import { Col, Row, Form } from "react-bootstrap";
 import { Formik } from "formik";
 import Button from "react-bootstrap/Button";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
-import {Redirect} from "react-router";
 
 class EmployeeForm extends Component {
 
     constructor(props){
         super(props);
-        this.state = {
-            redirectToEmployeeList: false
-        }
+        this.state = { redirectOccurred: false };
+        this.executeRedirect = this.executeRedirect.bind(this)
+    }
+
+    getFieldOptions(dictionary){
+        return(
+            dictionary.map(item =>
+                <option key={ item }>{ item }</option>
+            )
+        )
+    }
+
+    executeRedirect(){
+        this.setState({ redirectOccurred: true });
+        this.props.executeRedirect();
     }
 
     render() {
@@ -20,46 +31,55 @@ class EmployeeForm extends Component {
             <Formik
                 initialValues={ this.props.employee }
                 enableReinitialize={ true }
-                onSubmit={(employee, actions) => {
-                    console.log(actions)
-                    this.props.addEmployee(employee)
+                onSubmit={(employee, { resetForm }) => {
+                    this.props.addEmployee(employee);
+                    resetForm();
                 }}
-                render={ ({values, handleChange, handleSubmit}) => {
+                render={ ({ values, handleChange, submitForm, handleSubmit }) => {
                     return (
                         <Form
                             onSubmit={ handleSubmit }
-                        >   {!this.state.redirectToEmployeeList ? null : <Redirect to={"/employee"}/> }
-                            {this.props.employeeFields.map(field => {
+                        >   {this.props.employeeFields.map(field => {
                             let fieldVisible = formEditMode || field.visible;
                             let fieldReadOnly = !formEditMode;
+                            let showDictionary = formEditMode && field.dictionary
 
                             if (fieldVisible) {
                                 const controlId = "employeeForm" + field.id.charAt(0).toUpperCase() + field.id.substring(1) + "Control";
                                 const fieldValue = values[field.id] || "";
                                 return (
                                     <Form.Group
-                                        as={Row}
-                                        controlId={controlId}
-                                        key={controlId}
+                                        as={ Row }
+                                        controlId={ controlId }
+                                        key={ controlId }
                                     >
-                                        <Form.Label column>{field.name}</Form.Label>
+                                        <Form.Label column>{ field.name }</Form.Label>
                                         <Col>
                                             <Form.Control
-                                                name={field.id}
-                                                plaintext={fieldReadOnly}
-                                                readOnly={fieldReadOnly}
-                                                value={fieldValue}
-                                                onChange={handleChange}
-                                            />
+                                                name={ field.id }
+                                                plaintext={ fieldReadOnly }
+                                                readOnly={ fieldReadOnly }
+                                                value={ fieldValue }
+                                                onChange={ handleChange }
+                                                as={ showDictionary ? "select" : "input" }
+                                            >
+                                                { showDictionary ? this.getFieldOptions(this.props[field.dictionary]) : null }
+                                            </Form.Control>
                                         </Col>
                                     </Form.Group>
                                 )
                             }
                         })}
-                        {formEditMode ?
+                        { formEditMode ?
                             (<ButtonGroup>
-                                <Button type="submit">Сохранить и добавить еще</Button>
-                                <Button type="submit">Сохранить и вернуться в список</Button>
+                                <Button onClick={ submitForm } type="button">
+                                    Сохранить и добавить еще
+                                </Button>
+                                <Button onClick={() => { submitForm().then(() => { this.executeRedirect() })}}
+                                        type="button">
+                                    Сохранить и вернуться в список
+                                </Button>
+                                { this.state.redirectOccurred ? this.props.redirectPath : null }
                             </ButtonGroup>
                             ) : null
                         }
@@ -70,5 +90,7 @@ class EmployeeForm extends Component {
         )
     }
 }
+
+EmployeeForm.defaultProps = { employee:{}, formEditMode: true };
 
 export default EmployeeForm

@@ -8,7 +8,7 @@ class EmployeeFieldConfig extends Component {
             <thead>
             <tr>
                 <th>Поле</th>
-                { this.props.employeeFieldProperties.map(field => <th>{ field.name }</th> )}
+                { this.props.employeeFieldProperties.map(field => <th key={ field.name }>{ field.name }</th> )}
             </tr>
             </thead>
         )
@@ -18,10 +18,10 @@ class EmployeeFieldConfig extends Component {
         return(
             <tbody>
             { this.props.employeeFields.map(field =>
-                <tr>
-                    <td>{ field.name }</td>
+                <tr key={ field.id }>
+                    <td>{ field.id }</td>
                     { this.props.employeeFieldProperties.map(property =>
-                    <td>
+                    <td key={ field.id }>
                         <Form.Check
                             onChange={ () => { this.props.toggleFieldProperty(field.id, property.id) } }
                             checked={ field[property.id] }
@@ -38,8 +38,8 @@ class EmployeeFieldConfig extends Component {
         return (
             <Form>
                 <Table bordered hover size="sm">
-                    {this.getTableHeader()}
-                    {this.getTableBody()}
+                    { this.getTableHeader() }
+                    { this.getTableBody() }
                 </Table>
 
             </Form>
